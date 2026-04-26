@@ -19,8 +19,11 @@ if (!token) {
   window.location.href = "admin-login.html";
 } else {
   const user = JSON.parse(localStorage.getItem("adminUser"));
-  document.getElementById("admin-nav-name").textContent =
-    "👤 " + (user?.email || "Admin");
+
+  const nameEl = document.getElementById("admin-nav-name");
+  if (nameEl) {
+    nameEl.textContent = "👤 " + (user && user.email ? user.email : "Admin");
+  }
 }
 
 // -----------------------------------------------
@@ -407,8 +410,8 @@ function renderMedicinesTable(medicines) {
             <td style="font-weight:700; color:var(--primary-dark);">₹${m.price}</td>
             <td style="color:var(--gray);">${m.stock ?? "—"}</td>
             <td>
-              <button class="btn-edit" id="edit-btn-${m._id}" onclick="openEditModal('${m._id}')">✏️ Edit</button>
-              <button class="btn-del"  id="del-btn-${m._id}"  onclick="deleteMedicineAdmin('${m._id}', '${m.name.replace(/'/g, "&#39;")}')">🗑️ Delete</button>
+              <button class="btn-edit" id="edit-btn-${m._id}" onclick="openEditModal('${m._id}')">Edit</button>
+              <button class="btn-del" id="del-btn-${m._id}" onclick="deleteMedicineAdmin('${m._id}', \`${m.name}\`)">Delete</button>
             </td>
           </tr>
         `,
@@ -443,12 +446,12 @@ async function deleteMedicineAdmin(id, name) {
       document.getElementById("med-count").textContent =
         `${medicinesCache.length} medicine${medicinesCache.length !== 1 ? "s" : ""} found`;
       if (medicinesCache.length === 0) setMedState("med-empty");
-      showToast(`🗑️ "${name}" deleted.`);
+      showToast(`"${name}" deleted.`);
     } else {
       showToast("❌ " + result.message);
       if (delBtn) {
         delBtn.disabled = false;
-        delBtn.textContent = "🗑️ Delete";
+        delBtn.textContent = "Delete";
       }
       if (editBtn) editBtn.disabled = false;
     }
@@ -456,7 +459,7 @@ async function deleteMedicineAdmin(id, name) {
     showToast("❌ Server error. Try again.");
     if (delBtn) {
       delBtn.disabled = false;
-      delBtn.textContent = "🗑️ Delete";
+      delBtn.textContent = "Delete";
     }
     if (editBtn) editBtn.disabled = false;
   }
